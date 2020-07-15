@@ -12,4 +12,4 @@ Linux (Macは確認していませんが，実行できるとしたらこのコ�
 Windowsの方は
 3. $ ./main.exe
 ```
-[http://localhost:3000/](http://localhost:3000/)にアクセス
+上記の操作の後[http://localhost:3000/](http://localhost:3000/)にアクセス
