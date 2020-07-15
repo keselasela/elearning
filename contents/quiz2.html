@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <link rel="stylesheet" href="css/main.css">
+    <title>test</title>
+  </head>
+  <body>
+    <div class="quiz_area">
+      <div class="quiz_set">
+          第<span class="quiz_no">0</span>問
+          <div class="quiz_question"></div>
+          <div class="quiz_ans_area">
+              <ul></ul>
+          </div>
+          <div class="quiz_next"></div>
+          <div class="quiz_area_bg"></div>
+          <div class="quiz_area_icon"></div>
+      </div>
+      <div class="quiz_result"></div>
+  </div>
+  <div class="ex_area">
+    <div class="answer"></div>
+    <div class="ex"></div>
+  </div>
+
+
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js?ver=1.12.4'></script>
+
+<script>
+$(function(){
+    var flag = false;
+    var quizArea = $('.quiz_area');
+    var exArea = $('.ex_area');
+    var quiz_html = quizArea.html();
+    var quiz_cnt = 0;
+    var quiz_fin_cnt = 6;
+    var quiz_success_cnt = 0;
+
+
+
+    var aryQuiz = [];
+    aryQuiz.push(
+        {
+            question : '相手に好印象を持ってもらうためにはどうすればよいか',
+            answer : ['相手の行動や仕草、言葉遣いをマネする', '相手とは違う意見を積極的に発言する', 'なるべく反論はせず、相手のほとんどの意見に同意する'],
+            ex : "人は自分と似た人やモノに好感を抱く心理が働く。この心理を利用したものは「ミラーリング」と呼ばれる。相手の行動、仕草、言葉遣いをマネすることで、相手との心理的な距離を縮め、好印象を持ってもらうテクニックになる。同じ行為をされると、された方は無意識に安心感や親近感を抱き、相手の心が開かれるという心理が働く。  "
+        }
+        ,{
+            question : '相手の本音を聞き出すにはどうすればよいか',
+            answer : ['質問に対する意見を一般化させて語ってもらう', '相手にひたすら質問攻めする','自分の意見を積極的に発言し、それに対する意見を求める'],
+            ex : "人は本音を他人に語るのに躊躇することがある。そのため、語る人を自分ではなく、「一般的には」などと質問を一般化させて語ってもらう方法がある。これは投影法の一つであり、「一般論法」と呼ばれている。語っているのは“一般的な意見”であるが、その“一般”には語り手自身の意見や感情が無意識のうちに投影されているため、相手から本音を聞き出す方法の一つとなる。  "
+        }
+        ,{
+            question : '仕事のモチベーションが上がらない時、どうすればよいか ',
+            answer : ['わざと忙しくさせる', '出来るだけ何もしない'],
+            ex : "人はモノゴトを考えると自然に目が動く。視線が左上に向いている時、視覚イメージの中でも記憶にまつわるものを思い出していることが多く、過去の映像を思い浮かべている傾向にある。また、視線が右上に動いたときは、新しいイメージの想像や嘘を考えていることが多い。 "
+        }
+        ,{
+            question : '交渉相手に難しい要求を通すとき、どうすればよいか',
+            answer : ['最初に難しく、断られやすい要求を提示し、後に本当の要求を提示する', '最初に簡単な要求を提示し、徐々に難しい要求を提示する'],
+            ex : "腕組みは自分の心や体を守る無意識の行動である。そのため、腕組みは相手に対する拒絶や拒否の心情を表しており、相手側に心を開いていないことを意味する。 "
+        }
+        ,{
+            question : '購入者に対して、商品の信頼性を高めるにはどうすればよいか ',
+            answer : ['メリットの部分とデメリットの部分の両方を説明する', 'メリットばかりを誇張する','メリットはあまり見せない','自分の意見を押し付ける'],
+            ex : "人間の心理として、良いことばかりではむしろ不安になってしまう。「いつかは不幸だって訪れる」と心構えをしておけば、それに対しての備えもできるというもの。これは、何かの商品を購入する際にも働く心理である。商品を購入しようとする人は、その商品から得られるメリットがあれば、デメリットもあると推測してしまう。つまり、メリットばかりを誇張すると「この売り手は信頼できない」と判断されてしまう。これだけのメリットもあれば、こういうデメリットもあるという部分をちらっと見せておくことで信頼を得ることも可能なのだ。 "
+        }
+        ,{
+            question : '相手に自分の印象がはっきりと決まってしまうのは、出会ってから何回目までの間か',
+            answer : ['3回目', '2回目', '1回目','4回目'],
+            ex : "話を聞きながらこの仕草をするのは、相手の話をやめさせたいというサインである。相手の話に興味がなく、退屈であるという気持ちが強く表れている。 "
+        }
+
+    );
+
+    quizReset();
+
+
+    quizArea.on('click', '.quiz_ans_area ul li', function(){
+
+        quizArea.find('.quiz_area_bg').show();
+
+        $(this).addClass('selected');
+        if($(this).data('true')){
+
+            quizArea.find('.quiz_area_icon').addClass('true');
+
+            if(!flag){
+                quiz_success_cnt++;
+            }
+        }else{
+
+            quizArea.find('.quiz_area_icon').addClass('false');
+        }
+        flag=true;
+        setTimeout(function(){
+          quizArea.find('.quiz_ans_area ul li').removeClass('selected');
+          quizArea.find('.quiz_area_icon').removeClass('true false');
+          quizArea.find('.quiz_area_bg').hide();
+
+          exArea.find('.ex').show();
+          exArea.find('.answer').show();
+          exArea.find('.ex').text(aryQuiz[quiz_cnt]['ex']);
+          exArea.find('.answer').text('正解は"'+aryQuiz[quiz_cnt]['answer'][0]+'"');
+        }, 1500);
+    });
+
+
+    quizArea.on('click', '.quiz_restart', function(){
+        quizReset();
+    });
+
+    quizArea.on('click', '.quiz_next',    function next(){
+        exArea.find('.ex').hide();
+        exArea.find('.answer').hide();
+        flag = false;
+        quiz_cnt++;
+        if(quiz_fin_cnt > quiz_cnt){
+            quizShow();
+        }else{
+            quizResult();
+        }
+    });
+
+
+
+
+    function quizReset(){
+        quizArea.html(quiz_html);
+        quiz_cnt = 0;
+        quiz_success_cnt = 0;
+        aryQuiz = arrShuffle(aryQuiz);
+        quizShow();
+    }
+
+
+    function quizShow(){
+
+        quizArea.find('.quiz_no').text((quiz_cnt + 1));
+
+        quizArea.find('.quiz_question').text(aryQuiz[quiz_cnt]['question']);
+        quizArea.find('.quiz_next').text("次へ");
+
+        var success = aryQuiz[quiz_cnt]['answer'][0];
+
+        quizArea.find('.quiz_ans_area ul').empty();
+
+        var aryHoge = arrShuffle(aryQuiz[quiz_cnt]['answer'].concat());
+
+        $.each(aryHoge, function(key, value){
+            var fuga = '<li>' + value + '</li>';
+
+            if(success === value){
+                fuga = '<li data-true="1">' + value + '</li>';
+            }
+            quizArea.find('.quiz_ans_area ul').append(fuga);
+        });
+    }
+
+
+    function quizResult(){
+        quizArea.find('.quiz_set').hide();
+        var text = quiz_fin_cnt + '問中' + quiz_success_cnt + '問正解！';
+        if(quiz_fin_cnt === quiz_success_cnt){
+            text += '<br>全問正解おめでとう！';
+        }
+        text += '<br><input type="button" value="もう一度挑戦する" class="quiz_restart p-10">';
+        quizArea.find('.quiz_result').html(text);
+        quizArea.find('.quiz_result').show();
+    }
+
+
+    function arrShuffle(arr){
+        for(i = arr.length - 1; i > 0; i--){
+            var j = Math.floor(Math.random() * (i + 1));
+            var tmp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = tmp;
+        }
+        return arr;
+    }
+});
+</script>
+  </body>
+</html>
