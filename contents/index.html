@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <link rel="stylesheet" href="css/main.css">
+    <title>test</title>
+  </head>
+  <body>
+    <div class="quiz_area">
+      <div class="quiz_set">
+          第<span class="quiz_no">0</span>問
+          <div class="quiz_question"></div>
+          <div class="quiz_ans_area">
+              <ul></ul>
+          </div>
+          <div class="quiz_next"></div>
+          <div class="quiz_area_bg"></div>
+          <div class="quiz_area_icon"></div>
+      </div>
+      <div class="quiz_result"></div>
+  </div>
+  <div class="ex_area">
+    <div class="answer"></div>
+    <div class="ex"></div>
+  </div>
+
+
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js?ver=1.12.4'></script>
+
+<script>
+$(function(){
+    var quizArea = $('.quiz_area'); 
+    var exArea = $('.ex_area');
+    var quiz_html = quizArea.html(); 
+    var quiz_cnt = 0; 
+    var quiz_fin_cnt = 5; 
+    var quiz_success_cnt = 0; 
+
+   
+
+    var aryQuiz = [];
+    aryQuiz.push(
+        {
+            question : 'ペンや鉛筆をよく噛んでいる時、どういった心情を表しているか',
+            answer : ['不安の表れ', '自信の表れ', '三重', '期待の表れ'],
+            ex : "乳幼児期のおしゃぶりを加えて安心感を得るという反応が、大人になると「不安な時、何かを繰り返し咥えて、噛む」という動作に現れる。爪やたばこのフィルターを噛む人も同じく、不安が強い傾向にある。 "
+        }
+        ,{
+            question : '顔の左右の表情において、左側は何を表す傾向にあるか',
+            answer : ['本心', '偽りの気持ち'],
+            ex : "顔の右側の表情は無理してつくろった表情であり、左側の表情にその人の本心が表れる。喜んでいるふりや平常心を保っているふりの時など、本心とは違う表情は右側に強く表れる。また、本心に逆らって嘘をつくときは、身体がモゾモゾと落ち着かない動きをすることも知られている。 "
+        }
+        ,{
+            question : '会話中、視線が左上を向いている時、何を考えているか',
+            answer : ['過去の記憶', '退屈や飽き', '空想や妄想', '嫌悪'],
+            ex : "人はモノゴトを考えると自然に目が動く。視線が左上に向いている時、視覚イメージの中でも記憶にまつわるものを思い出していることが多く、過去の映像を思い浮かべている傾向にある。また、視線が右上に動いたときは、新しいイメージの想像や嘘を考えていることが多い。 "
+        }
+        ,{
+            question : '会話中の腕組みは何を意味しているか',
+            answer : ['相手に対する敵対心', '相手に対する関心', '相手に対する優越感'],
+            ex : "腕組みは自分の心や体を守る無意識の行動である。そのため、腕組みは相手に対する拒絶や拒否の心情を表しており、相手側に心を開いていないことを意味する。 "
+        }
+        ,{
+            question : '腕組みをする時、左腕を上にして組む人はどのような傾向にあるか',
+            answer : ['想像力が豊かな人', '物事を論理的に考える人'],
+            ex : "左右どちらかの腕が上になるかは、人間のアウトプットに関するタイプを表すと考えられている。左腕が上になる人は、情報のアウトプットを右脳で行っていることが多い。右脳は感覚や感情、イメージを司っている。そのため、想像力が豊かで、新しいアイデアの思いつきや、改善策を考えることが得意である。一方、右腕が上になる人は、情報のインプットを左脳で行っていることが多い。左脳は物事を論理的に考えることが得意なので、順序立てて物を考えることや分析すること、計算することに優れている。 "
+        }
+        ,{
+            question : '女性によく見られるが、会話中、毛先をクルクル触る動作は何を意味するか',
+            answer : ['相手に対する退屈', '相手に対する心配', '相手に対する苛立ち','相手に対する安心'],
+            ex : "話を聞きながらこの仕草をするのは、相手の話をやめさせたいというサインである。相手の話に興味がなく、退屈であるという気持ちが強く表れている。 "
+        }
+        ,{
+            question : '自然に足を組んだ時、右足が上の人はどういった傾向にあるか ',
+            answer : ['常識的で慎重', '楽観的でポジティブ'],
+            ex : "右足が上の人は常識的で慎重な傾向があり、初対面の人にも中々心を開かずに、控えめであるとされている。逆に左足が上の人は自信があり、開放的で楽観的な傾向にある。外交的であり、マイペースという一面もある。 "
+        }
+        ,{
+            question : 'うつ伏せで寝る人はどういった傾向にあるか',
+            answer : ['内向的な性格', '他人の目を気にしやすい性格', 'マイペースな性格','冷静な性格'],
+            ex : "うつ伏せで寝ることで、自分だけのパーソナルスペースを無意識のうちに作っている。プレッシャーに弱く、協調性などがある反面、主体性に欠けやすいと言われている。また、丸まって寝る人は本能的に自分を守ろうとする為、他人の目を気にしやすい性格、丸まらずに横向きで寝る人は冷静な性格、仰向けで寝る人は自信がありマイペースな性格という傾向が見られる。 "
+        }
+    );
+
+    quizReset();
+
+
+    quizArea.on('click', '.quiz_ans_area ul li', function(){
+    
+        quizArea.find('.quiz_area_bg').show();
+       
+        $(this).addClass('selected');
+        if($(this).data('true')){
+       
+            quizArea.find('.quiz_area_icon').addClass('true');
+          
+            quiz_success_cnt++;
+        }else{
+          
+            quizArea.find('.quiz_area_icon').addClass('false');
+        }
+        setTimeout(function(){
+          quizArea.find('.quiz_ans_area ul li').removeClass('selected');
+          quizArea.find('.quiz_area_icon').removeClass('true false');
+          quizArea.find('.quiz_area_bg').hide();
+          exArea.find('.ex').text(aryQuiz[quiz_cnt]['ex']);
+          exArea.find('.answer').text('正解は"'+aryQuiz[quiz_cnt]['answer'][0]+'"');
+        }, 1500);
+    });
+
+ 
+    quizArea.on('click', '.quiz_restart', function(){
+        quizReset();
+    });
+
+    quizArea.on('click', '.quiz_next',    function next(){
+          
+            quizArea.find('.quiz_ans_area ul li').removeClass('selected');
+            quizArea.find('.quiz_area_icon').removeClass('true false');
+            quizArea.find('.quiz_area_bg').hide();
+           
+            quiz_cnt++;
+            if(quiz_fin_cnt > quiz_cnt){
+            
+                quizShow();
+            }else{
+               
+                quizResult();
+            }
+    });
+
+
+
+    
+    function quizReset(){
+        quizArea.html(quiz_html); 
+        quiz_cnt = 0;
+        quiz_success_cnt = 0;
+        aryQuiz = arrShuffle(aryQuiz);
+        quizShow();
+    }
+
+  
+    function quizShow(){
+ 
+        quizArea.find('.quiz_no').text((quiz_cnt + 1));
+       
+        quizArea.find('.quiz_question').text(aryQuiz[quiz_cnt]['question']);
+        quizArea.find('.quiz_next').text("次へ");
+        
+        var success = aryQuiz[quiz_cnt]['answer'][0];
+    
+        quizArea.find('.quiz_ans_area ul').empty();
+     
+        var aryHoge = arrShuffle(aryQuiz[quiz_cnt]['answer'].concat());
+
+        $.each(aryHoge, function(key, value){
+            var fuga = '<li>' + value + '</li>';
+     
+            if(success === value){
+                fuga = '<li data-true="1">' + value + '</li>';
+            }
+            quizArea.find('.quiz_ans_area ul').append(fuga);
+        });
+    }
+
+   
+    function quizResult(){
+        quizArea.find('.quiz_set').hide();
+        var text = quiz_fin_cnt + '問中' + quiz_success_cnt + '問正解！';
+        if(quiz_fin_cnt === quiz_success_cnt){
+            text += '<br>全問正解おめでとう！';
+        }
+        text += '<br><input type="button" value="もう一度挑戦する" class="quiz_restart p-10">';
+        quizArea.find('.quiz_result').html(text);
+        quizArea.find('.quiz_result').show();
+    }
+
+
+    function arrShuffle(arr){
+        for(i = arr.length - 1; i > 0; i--){
+            var j = Math.floor(Math.random() * (i + 1));
+            var tmp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = tmp;
+        }
+        return arr;
+    }
+});
+</script>
+  </body>
+</html>
